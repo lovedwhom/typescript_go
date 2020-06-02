@@ -1,0 +1,1 @@
+let arr1: any[] = ['xcatliu', 25, { website: 'http://xcatliu.com' }]

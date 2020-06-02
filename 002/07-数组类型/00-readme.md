@@ -13,7 +13,31 @@
 
 [demo02][demo02]
 
+### 用接口表示数组
+
+[demo03][demo03]
+
+### 类数组
+
+[demo04][demo04]
+
+
+### any 在数组中的应用
+
+[demo05][demo05]
+
+
+
+
+
+
 
 [demo01]:./01.ts
 
 [demo02]: ./02.ts
+
+[demo03]: ./03.ts
+
+[demo04]: ./04.ts
+
+[demo05]: ./05.ts
