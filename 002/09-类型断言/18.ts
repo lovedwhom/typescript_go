@@ -7,5 +7,5 @@ interface Cat {
     run():void;
 }
 
-const tom = getCacheData('tom') as Cat;
+const tom:Cat = getCacheData('tom');
 tom.run()

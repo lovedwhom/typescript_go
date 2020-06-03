@@ -112,13 +112,25 @@
 
 ## 类型断言 vs 类型声明
 
+[demo17][demo17]
 
+我们使用 as Cat 将 any 类型断言为了 Cat 类型。
 
+但实际上还有其他方式可以解决这个问题
 
+[demo18][demo18]  
 
+上面的例子中，我们通过类型声明的方式，将 tom 声明为 Cat，然后再将 any 类型的 getCacheData('tom') 赋值给 Cat 类型的 tom。
 
+这和类型断言是非常相似的，而且产生的结果也几乎是一样的——tom 在接下来的代码中都变成了 Cat 类型。
 
+区别  
+[demo19][demo19]
+在上面的例子中，由于 Animal 兼容 Cat，故可以将 animal 断言为 Cat 赋值给 tom。
 
+但是若直接声明 tom 为 Cat 类型：  
+
+[demo20][demo20]
 
 [demo01]: ./01.ts
 [demo02]: ./02.ts
@@ -136,3 +148,7 @@
 [demo14]: ./14.ts
 [demo15]: ./15.ts
 [demo16]: ./16.ts
+[demo17]: ./17.ts
+[demo18]: ./18.ts
+[demo19]: ./19.ts
+[demo20]: ./20.ts
