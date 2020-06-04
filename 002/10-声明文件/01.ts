@@ -1,0 +1,3 @@
+$('#foo');
+// or
+jQuery('#foo');
