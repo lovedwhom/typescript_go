@@ -143,6 +143,11 @@ animal 赋值给 tom，需要满足 Cat 兼容 Animal 才行
 所以为了增加代码的质量，我们最好优先使用类型声明，这也比类型断言的 as 语法更加优雅。
 
 ## 类型断言 vs 泛型
+还是这个例子  
+[demo21][demo21]
+
+还有第三种方式可以解决 那就是泛型
+[demo22][demo22]
 
 
 [demo01]: ./01.ts
@@ -165,3 +170,5 @@ animal 赋值给 tom，需要满足 Cat 兼容 Animal 才行
 [demo18]: ./18.ts
 [demo19]: ./19.ts
 [demo20]: ./20.ts
+[demo21]: ./21.ts
+[demo22]: ./22.ts
