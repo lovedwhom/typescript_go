@@ -147,7 +147,7 @@ let cat = new Animal('Tom');
 
 使用 declare enum 定义的枚举类型也称作外部枚举（Ambient Enums  
 [demo07-d][demo07-d]  
-[demo07][demo07]
+[demo07][demo07]  
 与其他全局变量的类型声明一致，declare enum 仅用来定义类型，而不是具体的值。
 
 Directions.d.ts 仅仅会用于编译时的检查，声明文件里的内容在编译结果中会被删除。它编译结果是
@@ -159,20 +159,134 @@ var directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Ri
 ####  declare namespace
 namespace 是 ts 早期时为了解决模块化而创造的关键字，中文称为命名空间。
 
-[demo08-d][demo08-d]
+[demo08-d][demo08-d]  
 [demo08][demo08]
 
-##### 嵌套的命名空间
+### 嵌套的命名空间
 
-如果对象拥有深层的层级，则需要用嵌套的 namespace 来声明深层的属性的类型
-[demo09-d][demo09-d]
-[demo09][demo09]
+如果对象拥有深层的层级，则需要用嵌套的 namespace 来声明深层的属性的类型  
+[demo09-d][demo09-d]  
+[demo09][demo09]  
 
 
 假如 jQuery 下仅有 fn 这一个属性（没有 ajax 等其他属性或方法），则可以不需要嵌套 namespace
 
-[demo10-d][dem10-d]
-[demo10][demo10]
+[demo10-d][demo10-d]  
+[demo10][demo10]  
+
+#### interface和type
+除了全局变量之外，可能有一些类型我们也希望暴露出来。在类型声明文件中，我们可以直接使用interface或type来声明一个全局的接口或类型  
+[demo11][demo11]  
+这样的话，在其他文件中也可以使用这个接口或类型了：  
+[demo11-d][demo11-d]  
+
+#### 防止命名冲突
+暴露在最外层的interface或type或作为全局类型作用于整个项目中，我们应该尽可能少的减少全局变量或全局类型的变量。故最好将他们放到namespace下  
+
+[demo12-d][demo12-d]  
+
+注意这个时候 使用interface 要加上jquery前缀  
+[demo12][demo12]  
+
+#### 声明合并
+
+假如 jQuery 既是一个函数，可以直接被调用 jQuery('#foo')，又是一个对象，拥有子属性 jQuery.ajax()（事实确实如此），那么我们可以组合多个声明语句，它们会不冲突的合并起来  
+[demo13-d][demo13-d]  
+[demno13][demo13]  
+
+### npm包
+一般我们通过 import foo from 'foo' 导入一个 npm 包，这是符合 ES6 模块规范的。
+
+在我们尝试给一个 npm 包创建声明文件之前，需要先看看它的声明文件是否已经存在。一般来说，npm 包的声明文件可能存在于两个地方：
+
+1. 与该 npm 包绑定在一起。判断依据是 package.json 中有 types 字段，或者有一个 index.d.ts 声明文件。这种模式不需要额外安装其他包，是最为推荐的，所以以后我们自己创建 npm 包的时候，最好也将声明文件与 npm 包绑定在一起。
+2. 发布到 @types 里。我们只需要尝试安装一下对应的 @types 包就知道是否存在该声明文件，安装命令是 npm install @types/foo --save-dev。这种模式一般是由于 npm 包的维护者没有提供声明文件，所以只能由其他人将声明文件发布到 @types 里了。  
+
+假如以上两种方式都没有找到对应的声明文件，那么我们就需要自己为它写声明文件了。由于是通过 import 语句导入的模块，所以声明文件存放的位置也有所约束，一般有两种方案：
+
+1. 创建一个 node_modules/@types/foo/index.d.ts 文件，存放 foo 模块的声明文件。这种方式不需要额外的配置，但是 node_modules 目录不稳定，代码也没有被保存到仓库中，无法回溯版本，有不小心被删除的风险，故不太建议用这种方案，一般只用作临时测试。
+2. 创建一个 types 目录，专门用来管理自己写的声明文件，将 foo 的声明文件放到 types/foo/index.d.ts 中。这种方式需要配置下 tsconfig.json 中的 paths 和 baseUrl 字段。
+目录结构
+
+```
+/path/to/project
+├── src
+|  └── index.ts
+├── types
+|  └── foo
+|     └── index.d.ts
+└── tsconfig.json
+```
+tsconfig.json 内容
+
+```
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "baseUrl": "./",
+        "paths": {
+            "*": ["types/*"]
+        }
+    }
+}
+
+```
+如此配置之后，通过 import 导入 foo 的时候，也会去 types 目录下寻找对应的模块的声明文件了。
+
+npm 包的声明文件主要有以下几种语法：
+
+* export 导出变量
+* export namespace 导出（含有子属性的）对象
+* export default ES6 默认导出
+* export = commonjs 导出模块
+
+#### export
+npm 包的声明文件与全局变量的声明文件有很大区别。在 npm 包的声明文件中，使用 declare 不再会声明一个全局变量，而只会在当前文件中声明一个局部变量。只有在声明文件中使用 export 导出，然后在使用方 import 导入后，才会应用到这些类型声明。
+
+
+
+#### 混用 declare 和 export
+注意，与全局变量的声明文件类似，interface 前是不需要 declare 的。
+
+
+export namespace
+与 declare namespace 类似，export namespace 用来导出一个拥有子属性的对象17
+
+#### export default
+
+在 ES6 模块系统中，使用 export default 可以导出一个默认值，使用方可以用 import foo from 'foo' 而不是 import { foo } from 'foo' 来导入这个默认值。
+
+
+注意，只有 function、class 和 interface 可以直接默认导出，其他的变量需要先定义出来，再默认导出
+
+#### export =
+```
+// 整体导出
+module.exports = foo;
+// 单个导出
+exports.bar = bar;
+```
+
+在 ts 中，针对这种模块导出，有多种方式可以导入，第一种方式是 const ... = require：
+
+```
+// 整体导入
+const foo = require('foo');
+// 单个导入
+const bar = require('foo').bar;
+```
+第二种方式是 import ... from，注意针对整体导出，需要使用 import * as 来导入：
+```
+// 整体导入
+import * as foo from 'foo';
+// 单个导入
+import { bar } from 'foo';
+```
+
+
+
+
+
 
 
 
@@ -196,3 +310,9 @@ namespace 是 ts 早期时为了解决模块化而创造的关键字，中文称
 [demo09]: ./09.ts
 [demo10-d]: ./10.d.ts
 [demo10]: ./10.ts
+[demo11]: ./11.ts
+[demo11-d]: ./11.d.ts
+[demo12-d]: ./12.d.ts
+[demo12]: ./12.ts
+[demo13]: ./13.d.ts
+[demo13]: ./13.ts
